@@ -1,66 +1,66 @@
 # VirtualBox Debian Network Lab
 
-Laboratório de redes desenvolvido em Oracle VirtualBox utilizando Debian 12 Bookworm.
+A network laboratory built with Oracle VirtualBox and Debian 12 Bookworm.
 
-O projeto foi construído para implementar e validar uma pequena infraestrutura Linux com serviços separados de rede, administração remota, DNS, DHCP, servidor Web e HTTPS/TLS.
+The project implements a small Linux-based infrastructure with separate services for remote administration, DNS, DHCP, Web hosting, and HTTPS/TLS.
 
-## Ambiente
+## Environment
 
 - Host: Windows
 - Hypervisor: Oracle VirtualBox
 - Guests: Debian 12 Bookworm
-- Rede interna: `192.168.56.0/24`
-- NAT: acesso externo das VMs
-- Host-Only: comunicação interna do laboratório
+- Internal network: `192.168.56.0/24`
+- NAT: external and Internet access
+- Host-Only: internal lab communication
 
-## Arquitetura atual
+## Current Architecture
 
-| Máquina | Função | IPv4 Host-Only |
+| Machine | Role | Host-Only IPv4 |
 |---|---|---|
-| Windows | Administração | `192.168.56.1` |
-| ROOT | Administração / cliente | DHCP |
+| Windows | Administration host | `192.168.56.1` |
+| ROOT | Administration / client | DHCP |
 | VM2 | DNS / BIND9 | `192.168.56.20` |
 | VM3 | DHCP / Kea DHCP4 | `192.168.56.10` |
 | VM4 | Web / Nginx / HTTPS | `192.168.56.30` |
-| VM5 | Reservada para expansão | DHCP |
-| VM6 | Cliente de testes | DHCP |
+| VM5 | Reserved for future expansion | DHCP |
+| VM6 | Test client | DHCP |
 
-Cada VM possui duas interfaces:
+Each virtual machine uses two network interfaces:
 
 - `enp0s3` — NAT
 - `enp0s8` — Host-Only
 
-## Serviços implementados
+## Implemented Services
 
 ### SSH
 
-Administração das VMs Debian a partir do Windows utilizando OpenSSH.
+Remote administration of the Debian virtual machines from the Windows host using OpenSSH.
 
-Foram validados:
+The following were validated:
 
-- SSH na porta TCP 22
-- autenticação por senha
-- autenticação por chave pública Ed25519
+- SSH over TCP port 22
+- password authentication
+- Ed25519 public key authentication
 - `authorized_keys`
 - `known_hosts`
-- fingerprints dos servidores
-- sessões Windows → Debian
+- server fingerprints
+- Windows-to-Debian SSH sessions
 
 ### DNS
 
-Servidor DNS executado na VM2:
+DNS server:
 
-`192.168.56.20`
+`VM2 — 192.168.56.20`
 
 Software:
 
 `BIND9`
 
-Domínio interno:
+Internal domain:
 
 `lab.test`
 
-Registros utilizados:
+Main records:
 
 - `dns.lab.test`
 - `dhcp.lab.test`
@@ -68,78 +68,78 @@ Registros utilizados:
 
 ### DHCP
 
-Servidor DHCP executado na VM3:
+DHCP server:
 
-`192.168.56.10`
+`VM3 — 192.168.56.10`
 
 Software:
 
 `Kea DHCP4`
 
-Pool utilizado:
+Address pool:
 
 `192.168.56.101 - 192.168.56.200`
 
-O servidor fornece aos clientes:
+The DHCP server provides:
 
-- IPv4
-- máscara de rede
-- DNS interno
-- domínio `lab.test`
+- IPv4 addresses
+- subnet mask
+- internal DNS server
+- `lab.test` search domain
 
-O DHCP original do VirtualBox foi posteriormente desativado.
+The original VirtualBox DHCP service was later disabled and replaced by Kea.
 
-### Servidor Web
+### Web Server
 
-Servidor Web executado na VM4:
+Web server:
 
-`192.168.56.30`
+`VM4 — 192.168.56.30`
 
 Software:
 
 `Nginx`
 
-Endereço interno:
+Internal HTTP endpoint:
 
 `http://web.lab.test/`
 
-DocumentRoot:
+Document root:
 
 `/var/www/html`
 
 ### HTTPS / TLS
 
-A VM4 também foi configurada para atender:
+VM4 was also configured to provide:
 
 `https://web.lab.test/`
 
-Foi criada uma autoridade certificadora interna:
+An internal certificate authority was created:
 
 `LAB Root CA`
 
-O certificado do servidor possui:
+The server certificate contains:
 
-- CN: `web.lab.test`
-- SAN: `DNS:web.lab.test`
+- Common Name: `web.lab.test`
+- Subject Alternative Name: `DNS:web.lab.test`
 - Issuer: `LAB Root CA`
 
-A configuração foi validada com OpenSSL e clientes Windows/Linux.
+The certificate chain and hostname validation were tested using OpenSSL and Windows/Linux clients.
 
-TLS 1.3 foi negociado durante os testes.
+TLS 1.3 was negotiated during the validation tests.
 
-## Etapas
+## Project Stages
 
-| Etapa | Conteúdo | Estado |
+| Stage | Topic | Status |
 |---|---|---|
-| 01 | Infraestrutura | Concluída |
-| 02 | Comunicação entre VMs | Concluída |
-| 03 | IP, rotas e subnetting | Concluída |
-| 04 | SSH | Concluída |
-| 05 | DNS + DHCP | Concluída |
-| 06 | Nginx / HTTP | Concluída |
-| 07 | HTTPS / TLS | Implementada |
+| 01 | Infrastructure | Completed |
+| 02 | Network Connectivity | Completed |
+| 03 | IP, Routing and Subnetting | Completed |
+| 04 | SSH Remote Administration | Completed |
+| 05 | DNS and DHCP | Completed |
+| 06 | Nginx / HTTP | Completed |
+| 07 | HTTPS / TLS | Implemented |
 
-## Estrutura do repositório
+## Repository Structure
 
 ```text
 virtualbox-debian-network-lab/
