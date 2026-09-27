@@ -1,0 +1,14 @@
+$TTL 3600
+
+@   IN  SOA dns.lab.test. admin.lab.test. (
+        2026091701
+        3600
+        1800
+        604800
+        3600
+)
+
+@       IN  NS  dns.lab.test.
+
+20      IN  PTR dns.lab.test.
+10      IN  PTR dhcp.lab.test.

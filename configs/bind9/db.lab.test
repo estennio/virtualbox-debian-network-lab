@@ -1,0 +1,15 @@
+$TTL 3600
+
+@   IN  SOA dns.lab.test. admin.lab.test. (
+        2026091901
+        3600
+        1800
+        604800
+        3600
+)
+
+@       IN  NS  dns.lab.test.
+
+dns     IN  A   192.168.56.20
+dhcp    IN  A   192.168.56.10
+web     IN  A   192.168.56.30
